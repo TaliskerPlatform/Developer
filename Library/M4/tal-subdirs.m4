@@ -32,8 +32,8 @@ if false ; then
 	dnl Prevent AC_CONFIG_SUBDIRS being expanded more than once for the
 	dnl same SRC-PATH
 	m4_ifdef([tal_wrapname], [m4_undefine([tal_wrapname])])dnl
-	m4_define([tal_wrapname], [tal_srcdir_]$1))dnl
-	m4_ifdef(m4_defn([tal_wrapname]),,[
+	m4_define([tal_wrapname], [tal_srcdir_]$1)dnl
+	m4_ifdef(m4_defn([tal_wrapname]),[:],[
 		m4_define(m4_defn([tal_wrapname]))
 		AC_CONFIG_SUBDIRS([$1])
 	])
