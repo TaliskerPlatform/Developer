@@ -29,7 +29,14 @@ dnl Add a no-op AC_CONFIG_SUBDIRS for the source directory so that
 dnl recursive autoreconf and configure --help=recursive work
 dnl correctly
 if false ; then
-	AC_CONFIG_SUBDIRS([$1])
+	dnl Prevent AC_CONFIG_SUBDIRS being expanded more than once for the
+	dnl same SRC-PATH
+	m4_ifdef([tal_wrapname], [m4_undefine([tal_wrapname])])dnl
+	m4_define([tal_wrapname], [tal_srcdir_]$1))dnl
+	m4_ifdef(m4_defn([tal_wrapname]),,[
+		m4_define(m4_defn([tal_wrapname]))
+		AC_CONFIG_SUBDIRS([$1])
+	])
 fi
 dnl
 dnl If this is the first call to TAL_CONFIG_SUBDIR(), perform one-off
