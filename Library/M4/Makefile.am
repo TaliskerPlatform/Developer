@@ -16,4 +16,4 @@
 
 m4dir = ${devellibdir}/M4
 
-dist_m4_DATA = *.m4
+dist_m4_DATA = tal-domains.m4 tal-echo.m4 tal-subdirs.m4
