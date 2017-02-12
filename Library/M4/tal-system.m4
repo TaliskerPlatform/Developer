@@ -1,4 +1,5 @@
-dnl Talisker: Determine system types
+#serial 2017021100
+# Talisker: Determine system types
 
 dnl Copyright 2017 Mo McRoberts.
 dnl
@@ -18,7 +19,9 @@ m4_pattern_forbid([^_?TAL_])
 
 dnl - TAL_CANONICAL_SYSTEM()
 dnl Determine the build, host and target system types
+
 AC_DEFUN([TAL_CANONICAL_SYSTEM],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 AC_REQUIRE([TAL_CANONICAL_BUILD])dnl
 AC_REQUIRE([TAL_CANONICAL_HOST])dnl
 AC_REQUIRE([TAL_CANONICAL_TARGET])dnl
@@ -27,7 +30,9 @@ AC_REQUIRE([TAL_CANONICAL_TARGET])dnl
 dnl - TAL_CANONICAL_BUILD()
 dnl Determine the build system type (i.e., the system this script is being
 dnl executed on).
+
 AC_DEFUN([TAL_CANONICAL_BUILD],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 AC_REQUIRE([AC_CANONICAL_BUILD])dnl
 _TAL_SYS([build])dnl
 ])
@@ -36,7 +41,9 @@ dnl - TAL_CANONICAL_HOST()
 dnl Determine the host system type (i.e., the system that executables will be
 dnl compiled for); usually the same as the build system type unless
 dnl cross-compiling.
+
 AC_DEFUN([TAL_CANONICAL_HOST],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 _TAL_SYS([host])dnl
 ])
@@ -45,12 +52,15 @@ dnl - TAL_CANONICAL_TARGET()
 dnl Determine the target system type (i.e., the system that output from built
 dnl executables will be targeting; usually the same as the host system type
 dnl unless building cross-build tools.
+
 AC_DEFUN([TAL_CANONICAL_TARGET],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 AC_REQUIRE([AC_CANONICAL_TARGET])dnl
 _TAL_SYS([target])dnl
 ])
 
 dnl - _TAL_SYS($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS],[
 AS_LITERAL_IF([$1],,[m4_fatal([_TAL_SYS: $1 is not a literal])])dnl
 # Determine ]$1[ system family, platform, platform type (freestanding,
@@ -71,6 +81,7 @@ m4_if([$1],[target],[_TAL_SYS_VARIANTS([$1])])
 ])
 
 dnl - _TAL_SYS_FAMILY($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS_FAMILY],[
 case "$]$1[_cpu" in
 	i?86)
@@ -88,6 +99,7 @@ AC_DEFINE_UNQUOTED(m4_translit([$1], [a-z], [A-Z])[_FAMILY],["$]$1[_family"],[Th
 ])
 
 dnl - _TAL_SYS_PLATFORM($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS_PLATFORM],[
 AS_VAR_SET([tal_check],["$]$1[_os"])
 m4_changequote({,})dnl
@@ -106,6 +118,7 @@ AC_DEFINE_UNQUOTED(m4_translit([$1], [a-z], [A-Z])[_PLATFORM],["$]$1[_platform"]
 ])
 
 dnl - _TAL_SYS_TYPE($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS_TYPE],[
 case "$]$1[_os" in
 	none|elf*|coff*|ecoff*|aout*|oabi*|eabi*)
@@ -123,6 +136,7 @@ AC_DEFINE_UNQUOTED(m4_translit([$1], [a-z], [A-Z])[_TYPE],["$]$1[_type"],[The ty
 ])
 
 dnl - _TAL_SYS_BINDIR($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS_BINDIR],[
 case "$]$1[_type" in
 	hosted)
@@ -139,6 +153,7 @@ AC_SUBST($1[_bindir])
 ])
 
 dnl - _TAL_SYS_VARIANTS($1:KIND=build|host|target)
+
 AC_DEFUN([_TAL_SYS_VARIANTS],[
 case "$]$1[_type" in
 	hosted)

@@ -1,4 +1,5 @@
-dnl Talisker: Developer Tools
+#serial 2017021203
+# Talisker: Configure sub-projects
 
 dnl Copyright 2017 Mo McRoberts.
 dnl
@@ -21,7 +22,7 @@ dnl Analogous to AC_CONFIG_SUBDIR but allows overriding both the build
 dnl location and configure arguments
 
 AC_DEFUN([TAL_CONFIG_SUBDIR],[
-dnl
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 AS_LITERAL_IF([$1],,[m4_fatal([TAL_CONFIG_SUBDIR: $1 is not a literal])])dnl
 AS_LITERAL_IF([$2],,[m4_fatal([TAL_CONFIG_SUBDIR: $2 is not a literal])])dnl
 dnl

@@ -1,4 +1,5 @@
-dnl Talisker: Developer Tools
+#serial 2017021100
+# Talisker: User messages
 
 dnl Copyright 2017 Mo McRoberts.
 dnl
@@ -17,8 +18,10 @@ dnl  limitations under the License.
 m4_pattern_forbid([^_?TAL_])
 
 dnl - TAL_ECHO(MSG)
+dnl Emit a message for the user, logging it as well
 
 AC_DEFUN([TAL_ECHO],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 _AS_ECHO_LOG([$1])
 _AS_ECHO([$1])
 ])

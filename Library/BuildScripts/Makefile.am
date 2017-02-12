@@ -16,7 +16,15 @@
 
 buildscriptsdir = ${devellibdir}/BuildScripts
 
-dist_buildscripts_SCRIPTS = \
+# We arrange things this way because if --target is specified (which it
+# will be from time to time), we don't actually need automake's install-time
+# filename tranformation to happen for these files, as despite being
+# executable, they're architecture-independent.
+#
+# Therefore, to avoid this, we install them as _DATA, but add a hook that
+# invokes `chmod +x` on the installed files.
+
+SCRIPTFILES = \
 	ar-lib \
 	compile config.guess config.sub \
 	depcomp \
@@ -26,4 +34,9 @@ dist_buildscripts_SCRIPTS = \
 	tap-driver.sh test-driver \
 	ylwrap
 
-dist_buildscripts_DATA = texinfo.tex
+dist_buildscripts_DATA = $(SCRIPTFILES) \
+	texinfo.tex \
+	tal-m4.mk
+
+install-data-hook:
+	for i in $(SCRIPTFILES) ; do chmod +x $(DESTDIR)$(buildscriptsdir)/$$i || exit 1 ; done

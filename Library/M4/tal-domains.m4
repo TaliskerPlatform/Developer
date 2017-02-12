@@ -1,4 +1,5 @@
-dnl Talisker: Developer Tools
+#serial 2017021100
+# Talisker: Determine system-wide paths
 
 dnl Copyright 2017 Mo McRoberts.
 dnl
@@ -16,11 +17,16 @@ dnl  limitations under the License.
 
 m4_pattern_forbid([^_?TAL_])
 
+dnl - TAL_CHECK_DOMAINS()
+
 AC_DEFUN([TAL_CHECK_DOMAINS],[
+AC_REQUIRE([TAL_M4_UPDATE])dnl
 _TAL_CHECK_DOMAIN([sys], [System], [/Talisker])
 _TAL_CHECK_DOMAIN([devel], [Developer], [/Developer])
 _TAL_CHECK_DOMAIN([local], [Local], [/Local])
 _TAL_CHECK_DOMAIN([net], [Network], [/Network])
+_TAL_CHECK_DOMAIN([user], [User], [${HOME}])
+
 AS_VAR_SET([usersdir], [/Users])
 AC_SUBST([usersdir])
 AS_VAR_SET([shareduserdir], [/Users/Shared])
@@ -33,6 +39,7 @@ m4_define([_TAL_DOMAIN_VAR],[$1$2])
 m4_define([_TAL_DOMAIN_EVAR],[$][{$1$2}])
 
 dnl - _TAL_CHECK_DOMAIN(VAR-PREFIX, NAME, DEFAULT-PATH)
+
 AC_DEFUN([_TAL_CHECK_DOMAIN],[
 AS_LITERAL_IF([$1],,[m4_fatal([_TAL_CHECK_DOMAIN: $1 is not a literal])])dnl
 AC_ARG_WITH([$1]-domain,[AS_HELP_STRING([--with-$1-domain=PATH],[Specify path for the $2 domain (default is $3)])],,[withval='$3'])
