@@ -120,19 +120,22 @@ if test x"$no_recursion" != xyes && test x"$]m4_defn([tal_varname])[" = xyes; th
 
 	AS_MKDIR_P(["$tal_abs_builddir"])
 	if test x"$tal_srcdir" = x"$tal_builddir" ; then
-		TAL_ECHO([=== configuring $tal_srcdir])
+		TAL_ECHO([=== configuring sub-project $tal_srcdir])
 	else
-		TAL_ECHO([=== configuring $tal_srcdir in $tal_builddir])
+		TAL_ECHO([=== configuring sub-project $tal_srcdir in $tal_builddir])
 	fi
 	cd "$tal_abs_builddir"
 
 	TAL_ECHO([running $SHELL $tal_abs_srcdir/$tal_sub_configure $tal_sub_args])
 	eval "\$SHELL \"\$tal_abs_srcdir/\$tal_sub_configure\" $tal_sub_args" || AC_MSG_ERROR([$tal_sub_configure failed for $tal_srcdir])
-	$4
+	]m4_ifval([$4],[$4],[
+	AS_VAR_APPEND([tal_subdirs],[" $tal_builddir"])
+	AC_SUBST([tal_subdirs])
+	])[
 	if test x"$tal_srcdir" = x"$tal_builddir" ; then
-		TAL_ECHO([=== configured $tal_srcdir])
+		TAL_ECHO([=== configured sub-project $tal_srcdir])
 	else
-		TAL_ECHO([=== configured $tal_srcdir in $tal_builddir])
+		TAL_ECHO([=== configured sub-project $tal_srcdir in $tal_builddir])
 	fi
 fi
 cd "$tal_popdir"
