@@ -1,4 +1,4 @@
-#serial 2017021402
+#serial 2017021403
 # Talisker: Configure sub-projects
 
 dnl Copyright 2017 Mo McRoberts.
@@ -95,40 +95,48 @@ m4_append([_TAL_OUTPUT_SUBDIRS],[
 ## Configure sub-project ]$1[ in ]m4_ifval($2,$2,$1)[
 if test x"$no_recursion" != xyes && test x"$]m4_defn([tal_varname])[" = xyes; then
 	tal_srcdir="$1"
-	tal_abs_srcdir="$ac_pwd/$tal_srcdir"
+	tal_abs_srcdir="$ac_abs_confdir/$tal_srcdir"
 	tal_builddir="]m4_ifval($2,$2,$1)["
 	tal_abs_builddir="$ac_pwd$ac_dir_suffix/$tal_builddir"
 	tal_sub_type=$]m4_defn([tal_varname])[_type
 	tal_sub_configure=$]m4_defn([tal_varname])[_sub
 	
-	# Extend $tal_sub_configure_args for this specific project
-	tal_arg="$tal_abs_srcdir"
-	_TAL_SUBDIR_ARG_QUOTE
-	tal_sub_args="--srcdir='$tal_arg' $tal_sub_configure_args $3"
-	
-	# Add build, host, target
-	tal_arg="]m4_ifval($7,$7,[$build])["
-	_TAL_SUBDIR_ARG_QUOTE
-	AS_VAR_APPEND([tal_sub_args],[" --build='$tal_arg'"])
-
-	tal_arg="]m4_ifval($5,$5,[$host])["
-	_TAL_SUBDIR_ARG_QUOTE
-	AS_VAR_APPEND([tal_sub_args],[" --host='$tal_arg'"])
-
-	tal_arg="]m4_ifval($6,$6,[$target])["
-	_TAL_SUBDIR_ARG_QUOTE
-	AS_VAR_APPEND([tal_sub_args],[" --target='$tal_arg'"])
-
-	AS_MKDIR_P(["$tal_abs_builddir"])
 	if test x"$tal_srcdir" = x"$tal_builddir" ; then
 		TAL_ECHO([=== configuring sub-project $tal_srcdir])
 	else
 		TAL_ECHO([=== configuring sub-project $tal_srcdir in $tal_builddir])
 	fi
+	AS_MKDIR_P(["$tal_abs_builddir"])
 	cd "$tal_abs_builddir"
+	
+	if test x"$tal_sub_type" == x"autoconf" ; then
+		# Extend $tal_sub_configure_args for this specific project
+		tal_arg="$tal_abs_srcdir"
+		_TAL_SUBDIR_ARG_QUOTE
+		tal_sub_args="--srcdir='$tal_arg' $tal_sub_configure_args $3"
+	
+		# Add build, host, target
+		tal_arg="]m4_ifval($7,$7,[$build])["
+		_TAL_SUBDIR_ARG_QUOTE
+		AS_VAR_APPEND([tal_sub_args],[" --build='$tal_arg'"])
 
-	TAL_ECHO([running $SHELL $tal_abs_srcdir/$tal_sub_configure $tal_sub_args])
-	eval "\$SHELL \"\$tal_abs_srcdir/\$tal_sub_configure\" $tal_sub_args" || AC_MSG_ERROR([$tal_sub_configure failed for $tal_srcdir])
+		tal_arg="]m4_ifval($5,$5,[$host])["
+		_TAL_SUBDIR_ARG_QUOTE
+		AS_VAR_APPEND([tal_sub_args],[" --host='$tal_arg'"])
+
+		tal_arg="]m4_ifval($6,$6,[$target])["
+		_TAL_SUBDIR_ARG_QUOTE
+		AS_VAR_APPEND([tal_sub_args],[" --target='$tal_arg'"])
+
+		TAL_ECHO([running $SHELL $tal_abs_srcdir/$tal_sub_configure $tal_sub_args])
+		eval "\$SHELL \"\$tal_abs_srcdir/\$tal_sub_configure\" $tal_sub_args" || AC_MSG_ERROR([$tal_sub_configure failed for $tal_srcdir])
+	elif test x"$tal_sub_type" = x"bootstrap" ; then
+		tal_sub_args="$tal_bootstrap_args $3"
+		TAL_ECHO([running $SHELL $tal_abs_srcdir/$tal_sub_configure $tal_sub_args])
+		eval "\$SHELL \"\$tal_abs_srcdir/\$tal_sub_configure\" $tal_sub_args" || AC_MSG_ERROR([$tal_sub_configure failed for $tal_srcdir])
+	elif test x"$tal_sub_type" = x"cmake" ; then
+		AC_MSG_ERROR([currently unable to build CMake projects])
+	fi
 	]m4_ifval([$4],[$4],[
 	AS_VAR_APPEND([tal_subdirs],[" $tal_builddir"])
 	AC_SUBST([tal_subdirs])
@@ -153,7 +161,10 @@ dnl   OUTPUT: $tal_type, $tal_sub
 AC_DEFUN([_TAL_SUBDIR_DETECT],[
 if test -d "$tal_abs_srcdir" ; then
 	AC_MSG_CHECKING([for type of sub-project in $tal_srcdir])
-	if test -f "$tal_abs_srcdir/configure.gnu"; then
+	if test -f "$tal_abs_srcdir/bootstrap"; then
+		tal_type=bootstrap
+		tal_sub='bootstrap'
+	elif test -f "$tal_abs_srcdir/configure.gnu"; then
 		tal_type=autoconf
 		tal_sub='configure.gnu'
 	elif test -f "$tal_abs_srcdir/configure"; then
@@ -174,6 +185,7 @@ dnl Determine the arguments that will be passed to a configure script
 dnl Sets $tal_sub_configure_args (which should not be modified once set)
 AC_DEFUN([_TAL_SUBDIR_CONFIGURE_ARGS],[
 tal_sub_configure_args=''
+tal_bootstrap_args=''
 
 # Prepend --disable-option-checking to prevent warnings about options which
 # aren't known to this specific sub-project
@@ -188,6 +200,7 @@ fi
 tal_arg="$prefix"
 _TAL_SUBDIR_ARG_QUOTE
 AS_VAR_APPEND([tal_sub_configure_args],[" --prefix='$tal_arg'"])
+AS_VAR_APPEND([tal_bootstrap_args],[" --prefix='$tal_arg'"])
 
 # Strip arguments, such as --cache-file, that we don't want to be propagated
 # (e.g., because we've provided alternative)
