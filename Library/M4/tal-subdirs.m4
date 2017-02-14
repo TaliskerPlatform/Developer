@@ -1,4 +1,4 @@
-#serial 2017021203
+#serial 2017021402
 # Talisker: Configure sub-projects
 
 dnl Copyright 2017 Mo McRoberts.
@@ -71,7 +71,7 @@ AS_VAR_SET([m4_defn([tal_varname])], [no])
 tal_type=none
 tal_sub=''
 tal_srcdir="$1"
-tal_abs_srcdir="$ac_pwd/$tal_srcdir"
+tal_abs_srcdir="$ac_abs_confdir/$tal_srcdir"
 tal_builddir="]m4_ifval($2,$2,$1)["
 tal_abs_builddir="$ac_pwd$ac_dir_suffix/$tal_builddir"
 # Determine what sort of configuration needs to happen
@@ -231,9 +231,12 @@ do
 		-prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
 			tal_skip=yes
 			;;
+		target_alias=*|host_alias=*|build_alias=*)
+			tal_skip=yes
+			;;
 		*)
 			_TAL_SUBDIR_ARG_QUOTE
-			AS_VAR_APPEND([tal_sub_configure_args],["'$tal_arg'"])
+			AS_VAR_APPEND([tal_sub_configure_args],[" '$tal_arg'"])
 			;;
 		esac
 done
